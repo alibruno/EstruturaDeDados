@@ -18,6 +18,10 @@
 
 ### 6. [Iteradores](#iteradores)
 
+### 7. [Árvore](#árvore)
+
+### 8. [Árvore Binária](#árvore-binária)
+
 ---
 
 ## TAD
@@ -257,3 +261,96 @@ Duas noções de iteradores:
 
 #### [PositionList](src/lista/PositionList.java)
 #### [LinkedPositionList (Impl de Lista duplamente encadeada - TAD lista)](src/lista/LinkedPositionList.java)
+
+---
+
+## Árvore
+
+### O que é uma árvore
+Em Computação, é um modelo abstrato de uma estrutura hierárquica;
+
+Uma árvore consiste de nós com uma relação pai-filho.
+
+### Terminologias da árvore
+
+                A
+         ______/|\______
+        /       |       \
+       B        C        D
+      / \      / \
+     E   F    G   H
+        /|\
+       I J K
+
+- **Raiz (root)**: Nó sem pai (A);
+- **Nó interno**: Nó com, pelo menos, um filho (A, B, C, F);
+- **Nó externo**: Nó sem filhos (E, I, J, K, G, H, D);
+- **Ancestral de um nó**: pai, avô, bisavô, etc.;
+- **Profundidade de um nó**: Número de ancestrais;
+- **Altura de um árvore**: Profundidade máxima (3);
+- **Descendente de um nó**: filho, neto, bisneto, etc;
+- **Sub-árvore**: árvore formada por um nó e seus descendentes.
+
+### TAD Árvore
+
+- Métodos genéricos:
+  - `integer size()`: retorna o número de nós da árvore;
+  - `integer height()`: Retorna a altura;
+  - `boolean isEmpty()`: indica se a árvore é vazia;
+  - `Iterator elements()`: retorna um iterador para os elementos da árvore;
+  - `Iterator nos()`: retorna um iterador para os nós da árvore.
+- Métodos de acesso:
+  - `No root()`: retorna o nó raiz;
+  - `No parent(No)`: retorna o nó pai de um nó;
+  - `Iterator children(No)`: retorna um iterador para os filhos de um nó;
+- Métodos de consulta:
+  - `boolean isInternal(No)`: Verifica se o Nó é interno;
+  - `boolean isExternal(No)`: Verifica se o Nó é externo ou folha;
+  - `boolean isRoot(No)`: Verifica se o Nó é Raiz;
+  - `integer depth(No)`: Retorna a profundidade de um No.
+- Métodos de atualização:
+  - `Object replace(No, o)`: Altera o objeto armazenado em um Nó.
+
+### Como a árvore é estruturada
+
+                               ┌───────────────┐
+                               │   Node(A)     │
+                               ├───────────────┤
+                               │ element = A   │
+                               │ parent  = ∅   │
+                               │ children -----┼──────────────────────────────┐
+                               └───────────────┘                              │
+                                                                              │   
+            ┌───────────────────────────────┬─────────────────────────────────┴─────────────────────────────┐
+            │                               │                                                               │
+    ┌───────▼───────┐               ┌───────▼───────┐                                                ┌──────▼──────┐
+    │   Node(B)     │               │   Node(C)     │                                                │  Node(D)    │
+    ├───────────────┤               ├───────────────┤                                                ├─────────────┤
+    │ element = B   │               │ element = C   │                                                │ element = D │
+    │ parent = @A   │               │ parent = @A   │                                                │ parent = @A │
+    │ children=[]   │               │ children=[]   │                                                │ children=[] │
+    └───────────────┘               └───────────────┘                                                └─────────────┘
+
+### Interface
+
+#### [Árvore](src/arvore/Tree.java)
+
+---
+
+## Árvore binária
+
+Uma árvore binária é uma árvore com as seguintes propriedades:
+
+- Cada nó interno tem, no máximo, dois filhos;
+  - Arvore binária própria é aquela em que cada nó tem exatemente zero ou dois filhos;
+- Os filhos de um nó é um par ordenado.
+
+Chamamos os filhos de um nó de **filho da esquerda** e **filho da direita**;
+
+Podemos, também, definir uma árvore binária recursivamente como:
+- Uma árvore consistindo de um único nó;
+- Uma árvore cuja raiz tem um par ordenado de filho, cada um dos quais é uma árvore binária.
+
+### Interfaces
+
+#### [Árvore Binária](src/arvore/binaria/BinaryTree.java)
