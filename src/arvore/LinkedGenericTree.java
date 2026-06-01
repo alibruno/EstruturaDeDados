@@ -3,35 +3,36 @@ package arvore;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
-import static java.lang.Math.max;
-
-public class LinkedGeneralTree<E> implements Tree<E> {
+public class LinkedGenericTree<E> implements Tree<E> {
     private Node<E> root;
     private int size;
 
-    public LinkedGeneralTree() {
+    public LinkedGenericTree() {
         this.root = null;
         this.size = 0;
     }
 
-    public LinkedGeneralTree(E e) {
+    public LinkedGenericTree(E e) {
         addRoot(e);
-        this.size = 0;
     }
 
-    public void addRoot(E e) {
+    public Position<E> addRoot(E e) {
         if (!isEmpty()) {
             throw new IllegalStateException("Root already exists");
         }
         this.root = new Node<>(e, null);
+        this.size = 1;
+        return this.root;
     }
 
-    public void addChild(Position<E> v, E e) {
+    public Position<E> addChild(Position<E> v, E e) {
         Node<E> node = checkPosition(v);
         Node<E> newNode = new Node<>(e, node);
         node.addChild(newNode);
         this.size++;
+        return newNode;
     }
 
     @Override
@@ -46,12 +47,12 @@ public class LinkedGeneralTree<E> implements Tree<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return null;
+        return new ElementIterator();
     }
 
     @Override
     public Iterable<Position<E>> positions() {
-        return null;
+        return preOrderIterable();
     }
 
     @Override
@@ -71,6 +72,7 @@ public class LinkedGeneralTree<E> implements Tree<E> {
         return node.getParent();
     }
 
+    // O(n)
     @Override
     public Iterable<Position<E>> children(Position<E> v) throws IllegalArgumentException {
         Node<E> node = checkPosition(v);
@@ -78,7 +80,7 @@ public class LinkedGeneralTree<E> implements Tree<E> {
         // Cria uma lista vazia usando a interface pública Position
         List<Position<E>> snapshot = new ArrayList<>(node.childrenNumber());
 
-        // Copia os ponteiros (Não copia os dados, apenas as referências, então é rápido!)
+        // Copia os ponteiros (Não copia os dados, apenas as referências, então é rápido)
         for (Node<E> child : node.getChildren()) {
             snapshot.add(child);
         }
@@ -129,7 +131,7 @@ public class LinkedGeneralTree<E> implements Tree<E> {
         if (isEmpty()) {
             return 0;
         }
-        return heightRecursive(root); // Recursion starts directly from the root.
+        return heightRecursive(root);
     }
 
     public int height(Position<E> v) throws IllegalArgumentException {
@@ -142,9 +144,67 @@ public class LinkedGeneralTree<E> implements Tree<E> {
         }
         int h = 0;
         for (Node<E> child : v.getChildren()) {
-            h = max(h, heightRecursive(child));
+            h = Math.max(h, heightRecursive(child));
         }
         return 1 + h;
+    }
+
+    public void preOrder(Position<E> v, Consumer<Position<E>> visitor) {
+        Node<E> node = checkPosition(v);
+        preOrderConsumer(node, visitor);
+    }
+
+    private void preOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
+        visitor.accept(v);
+
+        for (Node<E> w : v.getChildren()) {
+            preOrderConsumer(w, visitor);
+        }
+    }
+
+    public Iterable<Position<E>> preOrderIterable() {
+        List<Position<E>> snapshot = new ArrayList<>();
+        if (!isEmpty()) {
+            preOrderSubtree((Node<E>) root(), snapshot);
+        }
+        return snapshot;
+    }
+
+    private void preOrderSubtree(Node<E> v, List<Position<E>> snapshot) {
+        snapshot.add(v);
+
+        for (Node<E> w : v.getChildren()) {
+            preOrderSubtree(w, snapshot);
+        }
+    }
+
+    public void postOrder(Position<E> v, Consumer<Position<E>> visitor) {
+        Node<E> node = checkPosition(v);
+        postOrderConsumer(node, visitor);
+    }
+
+    private void postOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
+        for (Node<E> w : v.getChildren()) {
+            postOrderConsumer(w, visitor);
+        }
+
+        visitor.accept(v);
+    }
+
+    public Iterable<Position<E>> postOrderIterable() {
+        List<Position<E>> snapshot = new ArrayList<>();
+        if (!isEmpty()) {
+            postOrderSubtree((Node<E>) root(), snapshot);
+        }
+        return snapshot;
+    }
+
+    private void postOrderSubtree(Node<E> v, List<Position<E>> snapshot) {
+        for (Node<E> w : v.getChildren()) {
+            postOrderSubtree(w, snapshot);
+        }
+
+        snapshot.add(v);
     }
 
     /**
@@ -206,5 +266,26 @@ public class LinkedGeneralTree<E> implements Tree<E> {
         public int childrenNumber() {
             return children.size();
         }
+
+        @Override
+        public String toString() {
+            return element.toString();
+        }
     }
+
+    private class ElementIterator implements Iterator<E> {
+        // Usa o positions() que acabamos de criar por baixo dos panos
+        private final Iterator<Position<E>> posIterator = positions().iterator();
+
+        @Override
+        public boolean hasNext() {
+            return posIterator.hasNext();
+        }
+
+        @Override
+        public E next() {
+            return posIterator.next().getElement(); // Extrai apenas o valor (E) da Position
+        }
+    }
+
 }
