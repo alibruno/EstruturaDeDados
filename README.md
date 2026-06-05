@@ -2,6 +2,10 @@
 
 ---
 
+## Livro base 
+
+GOODRICH, M. T.; TAMASSIA, R. **Estruturas de dados e algoritmos em Java**. 4.ed. Porto Alegre: Bookman, 2007.
+
 ## Sumário
 
 ### 0. [TAD](#tad)
@@ -334,6 +338,10 @@ Uma árvore consiste de nós com uma relação pai-filho.
 ### Interface
 
 #### [Árvore](src/arvore/Tree.java)
+
+### Implementações
+
+#### [Estrutura encadeada](src/arvore/LinkedGenericTree.java)
 
 ---
 
