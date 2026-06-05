@@ -53,7 +53,7 @@ public class LinkedGenericTree<E> implements Tree<E> {
         if (node == root) {
             throw new IllegalStateException("Root must not have parent");
         }
-        return node.getParent();
+        return node.parent;
     }
 
     // O(n)
@@ -93,7 +93,7 @@ public class LinkedGenericTree<E> implements Tree<E> {
     public E replace(Position<E> v, E e) throws IllegalArgumentException {
         Node<E> node = checkPosition(v);
         E replaced = node.getElement();
-        node.setElement(e);
+        node.element = e;
         return replaced;
     }
 
@@ -124,13 +124,13 @@ public class LinkedGenericTree<E> implements Tree<E> {
         if (node == root) {
             removeRoot();
         } else if (node.childrenNumber() == 0) {
-            node.getParent().removeChild(node);
+            node.parent.removeChild(node);
         } else if (node.childrenNumber() == 1) {
-            Node<E> parent = node.getParent();
-            parent.removeChild(node);
+            Node<E> newParent = node.parent;
+            newParent.removeChild(node);
             Node<E> child = node.getChildren().iterator().next();
-            child.setParent(parent);
-            parent.addChild(child);
+            child.parent = newParent;
+            newParent.addChild(child);
         } else {
             throw new IllegalStateException("Cannot remove an internal position with more than one child.");
         }
@@ -139,7 +139,7 @@ public class LinkedGenericTree<E> implements Tree<E> {
         // It helps the Garbage Collector by deleting old data.
         node.clearChildren();
         // important for validating checkPosition()
-        node.setParent(node);
+        node.parent = node;
         return removed;
     }
 
@@ -148,8 +148,8 @@ public class LinkedGenericTree<E> implements Tree<E> {
             throw new IllegalArgumentException("The root cannot be removed because it has more than one child");
         } else if (root.childrenNumber() == 1) {
             Node<E> child = root.getChildren().iterator().next();
-            child.setParent(null);
-            root.setParent(null);
+            child.parent = null;
+            root.parent = null;
             root = child;
         } else {
             root = null;
@@ -164,7 +164,7 @@ public class LinkedGenericTree<E> implements Tree<E> {
         if (v == root) {
             return 0;
         } else {
-            return 1 + depth(v.getParent());
+            return 1 + depth(v.parent);
         }
     }
 
@@ -261,7 +261,7 @@ public class LinkedGenericTree<E> implements Tree<E> {
             throw new IllegalArgumentException("Invalid position.");
         }
 
-        if (node.getParent() == node) {
+        if (node.parent == node) {
             throw new IllegalArgumentException("Position doesn't belong to a valid Node.");
         }
 
@@ -285,18 +285,6 @@ public class LinkedGenericTree<E> implements Tree<E> {
                 throw new IllegalStateException("This position is no longer valid.");
             }
             return element;
-        }
-
-        public void setElement(E element) {
-            this.element = element;
-        }
-
-        public Node<E> getParent() {
-            return parent;
-        }
-
-        public void setParent(Node<E> parent) {
-            this.parent = parent;
         }
 
         public Iterable<Node<E>> getChildren() {
