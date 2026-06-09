@@ -19,12 +19,6 @@ public class BinarySearchTree<E extends Comparable<E>> {
         return tree.inOrderIterable();
     }
 
-    /**
-     * Auxiliary method that searches for an element in the tree.
-     *
-     * @return The position where the element is located,
-     * or the last leaf position where it SHOULD be if it doesn't exist.
-     */
     private Position<E> treeSearch(Position<E> p, E key) {
         if (tree.isExternal(p)) {
             return p; // Reached the bottom of the tree
@@ -44,9 +38,6 @@ public class BinarySearchTree<E extends Comparable<E>> {
         return p;
     }
 
-    /**
-     * Inserts a new element into the Binary Search Tree
-     */
     public void insert(E key) {
         if (tree.isEmpty()) {
             tree.addRoot(key);
@@ -65,11 +56,6 @@ public class BinarySearchTree<E extends Comparable<E>> {
         }
     }
 
-    /**
-     * Removes an element from the tree and restructures it if necessary.
-     *
-     * @return The removed element, or null if it was not found.
-     */
     public E remove(E element) {
         if (tree.isEmpty()) {
             return null;
@@ -102,5 +88,38 @@ public class BinarySearchTree<E extends Comparable<E>> {
         tree.remove(p);
 
         return removedElement;
+    }
+
+    /**
+     * Prints the binary search tree structure sideways in the console.
+     * The root is displayed on the left, right subtrees above,
+     * and left subtrees below.
+     */
+    public void printTree() {
+        if (isEmpty()) {
+            System.out.println("Tree is empty");
+            return;
+        }
+
+        System.out.println("--- Tree structure ---");
+        printTreeRecursive(tree.root(), 0);
+        System.out.println("---------------------------");
+    }
+
+    // Reverse In-Order
+    private void printTreeRecursive(Position<E> p, int depth) {
+        // Traverse the right subtree first (displayed at the top)
+        if (tree.hasRight(p)) {
+            printTreeRecursive(tree.right(p), depth + 1);
+        }
+
+        // Print the current node with indentation based on its depth
+        String spaces = "      ".repeat(depth);
+        System.out.println(spaces + p.getElement());
+
+        // Traverse the left subtree (displayed at the bottom)
+        if (tree.hasLeft(p)) {
+            printTreeRecursive(tree.left(p), depth + 1);
+        }
     }
 }
