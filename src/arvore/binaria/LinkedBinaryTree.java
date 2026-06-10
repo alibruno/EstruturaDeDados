@@ -343,7 +343,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         }
 
         @Override
-        public E getElement() throws IllegalStateException {
+        public E element() throws IllegalStateException {
             if (parent == this) throw new IllegalStateException("Position invalid.");
             return element;
         }
@@ -360,7 +360,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
 
         @Override
         public E next() {
-            return posIterator.next().getElement(); // Extract only the value (E) from the Position
+            return posIterator.next().element(); // Extract only the value (E) from the Position
         }
     }
 }

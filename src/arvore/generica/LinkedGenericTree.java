@@ -279,7 +279,7 @@ public class LinkedGenericTree<E> implements Tree<E> {
         }
 
         @Override
-        public E getElement() throws IllegalStateException {
+        public E element() throws IllegalStateException {
             if (parent == this) {
                 throw new IllegalStateException("This position is no longer valid.");
             }
@@ -323,7 +323,7 @@ public class LinkedGenericTree<E> implements Tree<E> {
 
         @Override
         public E next() {
-            return posIterator.next().getElement(); // Extract only the value (E) from the Position
+            return posIterator.next().element(); // Extract only the value (E) from the Position
         }
     }
 

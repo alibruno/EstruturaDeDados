@@ -28,7 +28,7 @@ public class TestBST {
 //    private static void imprimirInOrder(BinarySearchTree<?> bst) {
 //        System.out.print("In-Order (Ordem Crescente): ");
 //        for (Position<?> p : bst.inOrder()) {
-//            System.out.print(p.getElement() + " ");
+//            System.out.print(p.element() + " ");
 //        }
 //        System.out.println();
 //    }

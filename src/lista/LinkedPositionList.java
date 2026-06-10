@@ -17,7 +17,7 @@ public class LinkedPositionList<E> implements PositionList<E> {
         }
 
         @Override
-        public E getElement() throws IllegalStateException {
+        public E element() throws IllegalStateException {
             if ((prev == null) || (next == null)) {
                 throw new IllegalStateException("Esta posição não é mais válida.");
             }
@@ -43,11 +43,9 @@ public class LinkedPositionList<E> implements PositionList<E> {
      * @throws IllegalArgumentException if the position is invalid
      */
     private Node<E> checkPosition(Position<E> p) throws IllegalArgumentException {
-        if (!(p instanceof Node)) {
+        if (!(p instanceof Node<E> node)) { // Cast de Position para Node
             throw new IllegalArgumentException("Posição inválida.");
         }
-
-        Node<E> node = (Node<E>) p; // Cast de Position para Node
 
         if (node == head || node == tail) {
             throw new IllegalArgumentException("The head/tail node isn't a valid position.");
@@ -252,7 +250,7 @@ public class LinkedPositionList<E> implements PositionList<E> {
 
         @Override
         public E next() {
-            return posIterator.next().getElement();
+            return posIterator.next().element();
         }
     }
 }

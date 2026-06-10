@@ -33,7 +33,7 @@ public class TestLinkedGenericTree {
         fileSystem.preOrder(root, p -> {
             int profundidade = fileSystem.depth(p);
             String espacos = "  ".repeat(profundidade); // Cria a identação baseada no nível
-            System.out.println(espacos + "|- " + p.getElement());
+            System.out.println(espacos + "|- " + p.element());
         });
 
 
@@ -52,7 +52,7 @@ public class TestLinkedGenericTree {
 
         System.out.print("\nTravessia Post-Order (De baixo para cima): ");
         for (Position<String> p : fileSystem.postOrderIterable()) {
-            System.out.print(p.getElement() + " -> ");
+            System.out.print(p.element() + " -> ");
         }
         System.out.println("FIM");
 

@@ -95,18 +95,18 @@ public class TestList {
         System.out.println("Size: " + list.size());
 
         System.out.println("\n--- before / after ---");
-        System.out.println("Antes de 'C': " + list.before(posC).getElement());
-        System.out.println("Depois de 'C': " + list.after(posC).getElement());
-        System.out.println("Primeiro: " + list.first().getElement() + " | Último: " + list.last().getElement());
+        System.out.println("Antes de 'C': " + list.before(posC).element());
+        System.out.println("Depois de 'C': " + list.after(posC).element());
+        System.out.println("Primeiro: " + list.first().element() + " | Último: " + list.last().element());
         System.out.println("isFirst('Z')? " + list.isFirst(posZ) + " | isLast('E')? " + list.isLast(posE));
 
         System.out.println("\n--- replaceElement ---");
         list.replaceElement(posC, "X"); // Novo elemento no nó onde estava o 'C'
-        System.out.println("Após replace, o nó que era 'C' agora é: " + posC.getElement());
+        System.out.println("Após replace, o nó que era 'C' agora é: " + posC.element());
 
         System.out.println("\n--- swapElements ---");
         list.swapElements(posA, posD);
-        System.out.println("Após swap, posA tem: '" + posA.getElement() + "' e posD tem: '" + posD.getElement() + "'");
+        System.out.println("Após swap, posA tem: '" + posA.element() + "' e posD tem: '" + posD.element() + "'");
 
         System.out.println("\n--- remove ---");
         String removedMid = list.remove(posA); // posA agora guarda o 'D' devido ao swap
