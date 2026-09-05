@@ -1,7 +1,4 @@
-package arvore.binaria;
-
-import arvore.Position;
-import arvore.Tree;
+package arvore;
 
 public interface BinaryTree<E> extends Tree<E> {
 

@@ -1,6 +1,6 @@
-package arvore.binaria;
+package arvore;
 
-import arvore.Position;
+import arvore.Tree.Position;
 
 public class BinarySearchTree<E extends Comparable<E>> {
     private final LinkedBinaryTree<E> tree = new LinkedBinaryTree<>();

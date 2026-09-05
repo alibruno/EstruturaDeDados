@@ -1,6 +1,7 @@
-package arvore.generica;
+package arvore.test;
 
-import arvore.Position;
+import arvore.LinkedGenericTree;
+import arvore.Tree.Position;
 
 public class TestLinkedGenericTree {
 

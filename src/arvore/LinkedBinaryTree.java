@@ -1,6 +1,4 @@
-package arvore.binaria;
-
-import arvore.Position;
+package arvore;
 
 import java.util.ArrayList;
 import java.util.Iterator;

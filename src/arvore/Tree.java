@@ -68,4 +68,14 @@ public interface Tree<E> extends Iterable<E> {
      * Replaces the element stored at a given position with a new element.
      */
     E replace(Position<E> v, E e) throws IllegalArgumentException;
+
+    interface Position<E> {
+        /**
+         * Returns the element stored at this position.
+         *
+         * @return the element stored at this position
+         * @throws IllegalStateException if the position is no longer valid
+         */
+        E element() throws IllegalStateException;
+    }
 }

@@ -1,4 +1,6 @@
-package arvore.binaria;
+package arvore.test;
+
+import arvore.BinarySearchTree;
 
 public class TestBST {
     public static void main(String[] args) {

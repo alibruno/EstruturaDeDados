@@ -1,7 +1,4 @@
-package arvore.generica;
-
-import arvore.Position;
-import arvore.Tree;
+package arvore;
 
 import java.util.ArrayList;
 import java.util.Iterator;
