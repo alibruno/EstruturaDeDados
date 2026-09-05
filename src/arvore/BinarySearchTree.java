@@ -18,10 +18,6 @@ public class BinarySearchTree<E extends Comparable<E>> {
     }
 
     private Position<E> treeSearch(Position<E> p, E key) {
-        if (tree.isExternal(p)) {
-            return p; // Reached the bottom of the tree
-        }
-
         int comp = key.compareTo(p.element());
 
         if (comp == 0) {
@@ -86,6 +82,12 @@ public class BinarySearchTree<E extends Comparable<E>> {
         tree.remove(p);
 
         return removedElement;
+    }
+
+    public Position<E> search(E key) {
+        if (isEmpty()) return null;
+        Position<E> p = treeSearch(tree.root(), key);
+        return key.compareTo(p.element()) == 0 ? p : null;
     }
 
     /**

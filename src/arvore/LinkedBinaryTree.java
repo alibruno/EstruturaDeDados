@@ -215,7 +215,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         if (v == root) {
             return 0;
         } else {
-            return 1 + depth(v.parent);
+            return 1 + depthNode(v.parent);
         }
     }
 
@@ -254,15 +254,9 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
     public Iterable<Position<E>> preOrderIterable() {
         List<Position<E>> snapshot = new ArrayList<>();
         if (!isEmpty()) {
-            preOrderSubtree((Node<E>) root(), snapshot);
+            preOrder(root(), snapshot::add);
         }
         return snapshot;
-    }
-
-    private void preOrderSubtree(Node<E> v, List<Position<E>> snapshot) {
-        snapshot.add(v);
-        if (v.left != null) preOrderSubtree(v.left, snapshot);
-        if (v.right != null) preOrderSubtree(v.right, snapshot);
     }
 
     public void postOrder(Position<E> v, Consumer<Position<E>> visitor) {
@@ -279,15 +273,9 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
     public Iterable<Position<E>> postOrderIterable() {
         List<Position<E>> snapshot = new ArrayList<>();
         if (!isEmpty()) {
-            postOrderSubtree((Node<E>) root(), snapshot);
+            postOrder(root(), snapshot::add);
         }
         return snapshot;
-    }
-
-    private void postOrderSubtree(Node<E> v, List<Position<E>> snapshot) {
-        if (v.left != null) postOrderSubtree(v.left, snapshot);
-        if (v.right != null) postOrderSubtree(v.right, snapshot);
-        snapshot.add(v);
     }
 
     public void inOrder(Position<E> v, Consumer<Position<E>> visitor) {
@@ -305,15 +293,9 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
     public Iterable<Position<E>> inOrderIterable() {
         List<Position<E>> snapshot = new ArrayList<>();
         if (!isEmpty()) {
-            inOrderSubtree((Node<E>) root(), snapshot);
+            inOrder(root(), snapshot::add);
         }
         return snapshot;
-    }
-
-    private void inOrderSubtree(Node<E> v, List<Position<E>> snapshot) {
-        if (v.left != null) inOrderSubtree(v.left, snapshot);
-        snapshot.add(v);
-        if (v.right != null) inOrderSubtree(v.right, snapshot);
     }
 
 
