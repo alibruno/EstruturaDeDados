@@ -1,5 +1,7 @@
 package arvore;
 
+import base.Position;
+
 public interface BinaryTree<E> extends Tree<E> {
 
     /**

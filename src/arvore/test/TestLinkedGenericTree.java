@@ -1,7 +1,7 @@
 package arvore.test;
 
 import arvore.LinkedGenericTree;
-import arvore.Tree.Position;
+import base.Position;
 
 public class TestLinkedGenericTree {
 

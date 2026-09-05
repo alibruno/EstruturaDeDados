@@ -1,6 +1,6 @@
 package arvore;
 
-import arvore.Tree.Position;
+import base.Position;
 
 public class BinarySearchTree<E extends Comparable<E>> {
     private final LinkedBinaryTree<E> tree = new LinkedBinaryTree<>();

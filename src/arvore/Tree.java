@@ -1,5 +1,6 @@
 package arvore;
 
+import base.Position;
 import java.util.Iterator;
 
 public interface Tree<E> extends Iterable<E> {
@@ -69,13 +70,4 @@ public interface Tree<E> extends Iterable<E> {
      */
     E replace(Position<E> v, E e) throws IllegalArgumentException;
 
-    interface Position<E> {
-        /**
-         * Returns the element stored at this position.
-         *
-         * @return the element stored at this position
-         * @throws IllegalStateException if the position is no longer valid
-         */
-        E element() throws IllegalStateException;
-    }
 }

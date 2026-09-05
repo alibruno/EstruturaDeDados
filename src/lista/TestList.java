@@ -1,6 +1,6 @@
 package lista;
 
-import lista.PositionList.Position;
+import base.Position;
 
 public class TestList {
 
