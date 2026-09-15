@@ -8,7 +8,7 @@ public class AVLTree<E extends Comparable<E>> {
     Node<E> root;
     int size;
 
-    public AVLTree(){
+    public AVLTree() {
         this.root = null;
         this.size = 0;
     }
@@ -40,7 +40,7 @@ public class AVLTree<E extends Comparable<E>> {
             return treeSearch(p.right, key);
         }
 
-        // Returns where the search stopped (will be the parent of the new node on insertion)
+        // Returns where the search stopped (parent for the new node on insertion)
         return p;
     }
 
@@ -54,11 +54,11 @@ public class AVLTree<E extends Comparable<E>> {
         int comp = key.compareTo(p.element);
 
         if (comp == 0) {
-            return;
+            return; // Duplicate keys are ignored
         } else if (comp < 0) {
-            addLeft(p, key);
+            checkBalanceFactor(addLeft(p, key));
         } else {
-            addRight(p, key);
+            checkBalanceFactor(addRight(p, key));
         }
     }
 
@@ -76,22 +76,43 @@ public class AVLTree<E extends Comparable<E>> {
 
         E removedElement = p.element;
 
-        // The node has 2 children -> Successor
+        // The node has 2 children -> Replace with In-Order Successor
         if (hasLeft(p) && hasRight(p)) {
-            // Find the successor
             Node<E> successor = p.right;
             while (hasLeft(successor)) {
                 successor = successor.left;
             }
 
-            // Replace the target node's element with the successor's element
+            // Replace target node's element with successor's element
             replace(p, successor.element);
 
-            // Move the pointer 'p' to point to the physical successor (this node will be removed)
+            // Set physical node to remove as the successor
             p = successor;
         }
 
-        //tree.remove(p);
+        // 'p' now has at most 1 child
+        Node<E> child = hasLeft(p) ? p.left : p.right;
+        Node<E> parent = p.parent;
+        boolean wasLeftChild = (parent != null && parent.left == p);
+
+        if (child != null) {
+            child.parent = parent;
+        }
+
+        if (parent == null) {
+            this.root = child;
+        } else {
+            if (wasLeftChild) {
+                parent.left = child;
+            } else {
+                parent.right = child;
+            }
+        }
+
+        this.size--;
+
+        // Propagate balance factor changes up the tree after deletion
+        checkBalanceFactorAfterRemoval(parent, wasLeftChild);
 
         return removedElement;
     }
@@ -102,62 +123,191 @@ public class AVLTree<E extends Comparable<E>> {
         return key.compareTo(p.element) == 0 ? p : null;
     }
 
-    /**
-     * Prints the binary search tree structure sideways in the console.
-     * The root is displayed on the left, right subtrees above,
-     * and left subtrees below.
-     */
-    public void printTree() {
-        if (isEmpty()) {
-            System.out.println("Tree is empty");
-            return;
-        }
-
-        System.out.println("--- Tree structure ---");
-        printTreeRecursive(root, 0);
-        System.out.println("---------------------------");
-    }
-
-    // Reverse In-Order
-    private void printTreeRecursive(Node<E> p, int depth) {
-        // Traverse the right subtree first (displayed at the top)
-        if (hasRight(p)) {
-            printTreeRecursive(p.right, depth + 1);
-        }
-
-        // Print the current node with indentation based on its depth
-        String spaces = "      ".repeat(depth);
-        System.out.println(spaces + p.element);
-
-        // Traverse the left subtree (displayed at the bottom)
-        if (hasLeft(p)) {
-            printTreeRecursive(p.left, depth + 1);
-        }
-    }
-
     private static class Node<E> {
         private E element;
         private Node<E> parent;
         private Node<E> left;
         private Node<E> right;
-        private int height;
+        private int balanceFactor;
 
-        public Node(E element, Node<E> parent, Node<E> left, Node<E> right, int height) {
+        public Node(E element, Node<E> parent, Node<E> left, Node<E> right, int balanceFactor) {
             this.element = element;
             this.parent = parent;
             this.left = left;
             this.right = right;
-            this.height = 0;
+            this.balanceFactor = balanceFactor;
         }
     }
 
-    // AUXILIAR METHODS
+    // AUXILIARY METHODS: AVL
+
+    private void checkBalanceFactor(Node<E> node) {
+        Node<E> current = node;
+
+        while (current.parent != null) {
+            Node<E> parent = current.parent;
+
+            // Insertion in left subtree increases BF (+1), right subtree decreases BF (-1)
+            if (current == parent.left) {
+                parent.balanceFactor += 1;
+            } else {
+                parent.balanceFactor -= 1;
+            }
+
+            // BF became 0 -> height of subtree did not increase overall
+            if (parent.balanceFactor == 0) {
+                break;
+            }
+
+            // Unbalanced node
+            else if (parent.balanceFactor == 2 || parent.balanceFactor == -2) {
+                rebalance(parent);
+                break;
+            }
+
+            // BF is +1 or -1
+            current = parent;
+        }
+    }
+
+    private void checkBalanceFactorAfterRemoval(Node<E> parent, boolean wasLeftChild) {
+        Node<E> node = parent;
+        boolean childWasLeft = wasLeftChild;
+
+        while (node != null) {
+            Node<E> nextParent = node.parent;
+            boolean nextIsLeft = (nextParent != null && nextParent.left == node);
+
+            // left -> decreases BF (-1); right -> increases BF (+1)
+            if (childWasLeft) {
+                node.balanceFactor -= 1;
+            } else {
+                node.balanceFactor += 1;
+            }
+
+            // BF became +1 or -1 -> subtree height did not decrease
+            
+            if (node.balanceFactor == 1 || node.balanceFactor == -1) {
+                break;
+            }
+
+            // Unbalanced node
+            else if (node.balanceFactor == 2 || node.balanceFactor == -2) {
+                Node<E> newSubtreeRoot = rebalance(node);
+                // if new root BF is non-zero, overall subtree height was preserved
+                if (newSubtreeRoot.balanceFactor != 0) {
+                    break;
+                }
+                node = newSubtreeRoot;
+            }
+
+            childWasLeft = nextIsLeft;
+            node = nextParent;
+        }
+    }
+
+    private Node<E> rebalance(Node<E> p) {
+        if (p.balanceFactor == 2) { // Left-heavy
+            if (p.left.balanceFactor >= 0) {
+                return rotateRight(p);
+            } else {
+                return rotateDoubleRight(p);
+            }
+        } else if (p.balanceFactor == -2) { // Right-heavy
+            if (p.right.balanceFactor <= 0) {
+                return rotateLeft(p);
+            } else {
+                return rotateDoubleLeft(p);
+            }
+        }
+        return p;
+    }
 
     /*
-    
-    BINARY TREE
-
+    10  (p)  -> BF = -2 
+         \
+          20  (q)  -> BF = -1
+            \
+             30    -> BF = 0
     */
+    private Node<E> rotateLeft(Node<E> p) {
+        Node<E> q = p.right;
+        Node<E> parent = p.parent;
+
+        p.right = q.left;
+        if (q.left != null) {
+            q.left.parent = p;
+        }
+
+        q.left = p;
+        p.parent = q;
+
+        q.parent = parent;
+        if (parent == null) {
+            this.root = q;
+        } else if (parent.left == p) {
+            parent.left = q;
+        } else {
+            parent.right = q;
+        }
+
+        int pBF = p.balanceFactor;
+        int qBF = q.balanceFactor;
+
+        p.balanceFactor = pBF + 1 - Math.min(qBF, 0);
+        q.balanceFactor = qBF + 1 + Math.max(p.balanceFactor, 0);
+
+        return q;
+    }
+
+    /*
+           10 (p) -> BF = +2 
+          /     
+       20 (q) -> BF = +1
+      /     
+    30 -> BF = 0
+    */
+    private Node<E> rotateRight(Node<E> p) {
+        Node<E> q = p.left;
+        Node<E> parent = p.parent;
+
+        p.left = q.right;
+        if (q.right != null) {
+            q.right.parent = p;
+        }
+
+        q.right = p;
+        p.parent = q;
+
+        q.parent = parent;
+        if (parent == null) {
+            this.root = q;
+        } else if (parent.left == p) {
+            parent.left = q;
+        } else {
+            parent.right = q;
+        }
+
+        int pBF = p.balanceFactor;
+        int qBF = q.balanceFactor;
+
+        p.balanceFactor = pBF - 1 - Math.max(qBF, 0);
+        q.balanceFactor = qBF - 1 + Math.min(p.balanceFactor, 0);
+
+        return q;
+    }
+
+    private Node<E> rotateDoubleLeft(Node<E> p) {
+        rotateRight(p.right);
+        return rotateLeft(p);
+    }
+
+    private Node<E> rotateDoubleRight(Node<E> p) {
+        rotateLeft(p.left);
+        return rotateRight(p);
+    }
+
+    // AUXILIARY METHODS: BINARY TREE
 
     private Node<E> addRoot(E e) {
         if (!isEmpty()) {
@@ -187,33 +337,13 @@ public class AVLTree<E extends Comparable<E>> {
         this.size++;
         return newNode;
     }
-    
+
     private boolean hasLeft(Node<E> v) {
         return v.left != null;
     }
 
     private boolean hasRight(Node<E> v) {
         return v.right != null;
-    }
-
-    private Node<E> sibling(Node<E> p) {
-        Node<E> parent = p.parent;
-
-        // Root dont have brother
-        if (parent == null) {
-            return null;
-        }
-
-        // It can return null if it doesn't exist.
-        if (p == parent.left) {
-            return parent.right;
-        } else {
-            return parent.left;
-        }
-    }
-
-    private boolean hasSibling(Node<E> v) {
-        return sibling(v) != null;
     }
 
     private E replace(Node<E> v, E e) throws IllegalArgumentException {
@@ -227,5 +357,4 @@ public class AVLTree<E extends Comparable<E>> {
         visitor.accept(v);
         if (v.right != null) inOrderConsumer(v.right, visitor);
     }
-
 }
