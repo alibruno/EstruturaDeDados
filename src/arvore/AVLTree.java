@@ -416,10 +416,12 @@ public class AVLTree<E extends Comparable<E>> {
 
     private int height(Node<E> v) {
         int h = 0;
-        if (v.left != null)
+        if (v.left != null){
             h = Math.max(h, 1 + height(v.left));
-        if (v.right != null)
+        }
+        if (v.right != null){
             h = Math.max(h, 1 + height(v.right));
+        }
         return h;
     }
 
