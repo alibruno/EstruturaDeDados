@@ -2,6 +2,7 @@ package arvore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.function.Consumer;
 
 public class AVLTree<E extends Comparable<E>> {
@@ -54,7 +55,7 @@ public class AVLTree<E extends Comparable<E>> {
         int comp = key.compareTo(p.element);
 
         if (comp == 0) {
-            return; // Duplicate keys are ignored
+            return;
         } else if (comp < 0) {
             checkBalanceFactor(addLeft(p, key));
         } else {
@@ -76,21 +77,20 @@ public class AVLTree<E extends Comparable<E>> {
 
         E removedElement = p.element;
 
-        // The node has 2 children -> Replace with In-Order Successor
+        // 2 children -> search successor
         if (hasLeft(p) && hasRight(p)) {
             Node<E> successor = p.right;
             while (hasLeft(successor)) {
                 successor = successor.left;
             }
 
-            // Replace target node's element with successor's element
+            // Replace | node e -> successor e
             replace(p, successor.element);
 
-            // Set physical node to remove as the successor
             p = successor;
         }
 
-        // 'p' now has at most 1 child
+        // p -> 1/0 child
         Node<E> child = hasLeft(p) ? p.left : p.right;
         Node<E> parent = p.parent;
         boolean wasLeftChild = (parent != null && parent.left == p);
@@ -99,6 +99,7 @@ public class AVLTree<E extends Comparable<E>> {
             child.parent = parent;
         }
 
+        // root removed
         if (parent == null) {
             this.root = child;
         } else {
@@ -111,16 +112,56 @@ public class AVLTree<E extends Comparable<E>> {
 
         this.size--;
 
-        // Propagate balance factor changes up the tree after deletion
         checkBalanceFactorAfterRemoval(parent, wasLeftChild);
 
         return removedElement;
     }
 
     public Node<E> search(E key) {
-        if (isEmpty()) return null;
+        if (isEmpty())
+            return null;
         Node<E> p = treeSearch(root, key);
         return key.compareTo(p.element) == 0 ? p : null;
+    }
+
+
+    /**
+     * Print da árvore no console. Adaptação para nós avl com fator de balanceamento ao lado.
+     * @author Robinson Luis (aka coleguinha)
+     */
+    public void printTree() {
+        Node[][] mat = new Node[height(root) + 1][size];
+
+        inOrderMat(root, mat, 0);
+
+        for (int l = 0; l < height(root) + 1; l++) {
+            for (int c = 0; c < size; c++) {
+                Node node = mat[l][c];
+
+                if (node == null) {
+                    System.out.print("    "); // 4 spaces
+                } else {
+                    System.out.print(node.element + "[" + node.balanceFactor + "]");
+                }
+            }
+
+            System.out.println();
+        }
+    }
+
+    private int inOrderMat(Node<E> v, Node[][] mat, int i) {
+        if (v.left != null) {
+            i = inOrderMat(v.left, mat, i);
+        }
+
+        mat[depth(v)][i] = v;
+        i++;
+
+        if (v.right != null) {
+            i = inOrderMat(v.right, mat, i);
+        }
+
+        return i; // retorno para atualizar o i durante a chamada recursiva. i++ não é refletida nas chamadas recursivas anteriores/posteriores.
     }
 
     private static class Node<E> {
@@ -147,14 +188,14 @@ public class AVLTree<E extends Comparable<E>> {
         while (current.parent != null) {
             Node<E> parent = current.parent;
 
-            // Insertion in left subtree increases BF (+1), right subtree decreases BF (-1)
+            // Insertion | left -> BF (+1) | right -> BF (-1)
             if (current == parent.left) {
                 parent.balanceFactor += 1;
             } else {
                 parent.balanceFactor -= 1;
             }
 
-            // BF became 0 -> height of subtree did not increase overall
+            // BF = 0 -> node is now balanced
             if (parent.balanceFactor == 0) {
                 break;
             }
@@ -165,7 +206,7 @@ public class AVLTree<E extends Comparable<E>> {
                 break;
             }
 
-            // BF is +1 or -1
+            // BF -> +1 or -1
             current = parent;
         }
     }
@@ -178,15 +219,14 @@ public class AVLTree<E extends Comparable<E>> {
             Node<E> nextParent = node.parent;
             boolean nextIsLeft = (nextParent != null && nextParent.left == node);
 
-            // left -> decreases BF (-1); right -> increases BF (+1)
+            // Remove | left -> BF (+1) | right -> BF (-1)
             if (childWasLeft) {
                 node.balanceFactor -= 1;
             } else {
                 node.balanceFactor += 1;
             }
 
-            // BF became +1 or -1 -> subtree height did not decrease
-            
+            // BF = +1 or -1 -> (before) node BF = 0 -> balanced
             if (node.balanceFactor == 1 || node.balanceFactor == -1) {
                 break;
             }
@@ -194,7 +234,7 @@ public class AVLTree<E extends Comparable<E>> {
             // Unbalanced node
             else if (node.balanceFactor == 2 || node.balanceFactor == -2) {
                 Node<E> newSubtreeRoot = rebalance(node);
-                // if new root BF is non-zero, overall subtree height was preserved
+                // new root -> BF != 0 | balenced
                 if (newSubtreeRoot.balanceFactor != 0) {
                     break;
                 }
@@ -224,11 +264,11 @@ public class AVLTree<E extends Comparable<E>> {
     }
 
     /*
-    10  (p)  -> BF = -2 
-         \
-          20  (q)  -> BF = -1
-            \
-             30    -> BF = 0
+    10 (p) -> BF = -2
+      \
+       20 (q) -> BF = -1
+        \
+         30 -> BF = 0
     */
     private Node<E> rotateLeft(Node<E> p) {
         Node<E> q = p.right;
@@ -261,10 +301,10 @@ public class AVLTree<E extends Comparable<E>> {
     }
 
     /*
-           10 (p) -> BF = +2 
-          /     
+          10 (p) -> BF = +2
+         /
        20 (q) -> BF = +1
-      /     
+      /
     30 -> BF = 0
     */
     private Node<E> rotateRight(Node<E> p) {
@@ -297,11 +337,25 @@ public class AVLTree<E extends Comparable<E>> {
         return q;
     }
 
+    /*
+    10 (p, BF=-2)             10 (p, BF=-2)                      20 (BF=0)
+      \                         \                               /  \
+      30 (q, BF=+1) ==========>  20 (r, BF=-1)  ============> 10    30
+      /                            \                          (BF=0)(BF=0)
+    20 (r, BF=0)                   30 (q, BF=0)
+    */
     private Node<E> rotateDoubleLeft(Node<E> p) {
         rotateRight(p.right);
         return rotateLeft(p);
     }
 
+    /*
+      10 (p, BF=+2)               10 (p, BF=+2)                  20 (BF=0)
+     /                           /                              /  \
+    30 (q, BF=-1)  ==========> 20 (r, BF=+1)  ===========>    30    10
+     \                         /                             (BF=0)(BF=0)
+      20 (r, BF=0)            30 (q, BF=0)
+     */
     private Node<E> rotateDoubleRight(Node<E> p) {
         rotateLeft(p.left);
         return rotateRight(p);
@@ -320,7 +374,7 @@ public class AVLTree<E extends Comparable<E>> {
 
     private Node<E> addLeft(Node<E> v, E e) throws IllegalArgumentException {
         if (v.left != null) {
-            throw new IllegalArgumentException("This position already has a child on the left.");
+            throw new IllegalArgumentException("This node already has a child on the left.");
         }
         Node<E> newNode = new Node<>(e, v, null, null, 0);
         v.left = newNode;
@@ -330,7 +384,7 @@ public class AVLTree<E extends Comparable<E>> {
 
     private Node<E> addRight(Node<E> v, E e) throws IllegalArgumentException {
         if (v.right != null) {
-            throw new IllegalArgumentException("This position already has a child on the right.");
+            throw new IllegalArgumentException("This node already has a child on the right.");
         }
         Node<E> newNode = new Node<>(e, v, null, null, 0);
         v.right = newNode;
@@ -352,9 +406,30 @@ public class AVLTree<E extends Comparable<E>> {
         return replaced;
     }
 
+    private int depth(Node<E> v) {
+        if (v == root) {
+            return 0;
+        } else {
+            return 1 + depth(v.parent);
+        }
+    }
+
+    private int height(Node<E> v) {
+        int h = 0;
+        if (v.left != null)
+            h = Math.max(h, 1 + height(v.left));
+        if (v.right != null)
+            h = Math.max(h, 1 + height(v.right));
+        return h;
+    }
+
     private void inOrderConsumer(Node<E> v, Consumer<Node<E>> visitor) {
-        if (v.left != null) inOrderConsumer(v.left, visitor);
+        if (v.left != null) {
+            inOrderConsumer(v.left, visitor);
+        }
         visitor.accept(v);
-        if (v.right != null) inOrderConsumer(v.right, visitor);
+        if (v.right != null) {
+            inOrderConsumer(v.right, visitor);
+        }
     }
 }
