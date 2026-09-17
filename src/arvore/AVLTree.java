@@ -177,6 +177,14 @@ public class AVLTree<E extends Comparable<E>> {
             this.right = right;
             this.balanceFactor = balanceFactor;
         }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "element=" + element +
+                    ", balanceFactor=" + balanceFactor +
+                    '}';
+        }
     }
 
     // AUXILIARY METHODS: AVL

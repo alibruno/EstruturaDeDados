@@ -26,5 +26,8 @@ public class TestAVLTree {
 
         System.out.println("\n--- Estado Final Após Remover 5 ---");
         avl.printTree();
+
+        System.out.println("\nBUSCAR NÓ 8");
+        System.out.println(avl.search(8));
     }
 }
