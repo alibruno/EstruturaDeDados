@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-public class LinkedBinaryTree<E> implements BinaryTree<E> {
+public abstract class LinkedBinaryTree<E> implements BinaryTree<E> {
     private Node<E> root;
     private int size;
 
@@ -140,7 +140,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         return this.root;
     }
 
-    public Position<E> addLeft(Position<E> v, E e) throws IllegalArgumentException {
+    protected Position<E> addLeft(Position<E> v, E e) throws IllegalArgumentException {
         Node<E> node = checkPosition(v);
         if (node.left != null) {
             throw new IllegalArgumentException("This position already has a child on the left.");
@@ -151,7 +151,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         return newNode;
     }
 
-    public Position<E> addRight(Position<E> v, E e) throws IllegalArgumentException {
+    protected Position<E> addRight(Position<E> v, E e) throws IllegalArgumentException {
         Node<E> node = checkPosition(v);
         if (node.right != null) {
             throw new IllegalArgumentException("This position already has a child on the right.");
@@ -162,7 +162,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         return newNode;
     }
 
-    public E remove(Position<E> v) {
+    protected E remove(Position<E> v) {
         if (isEmpty()) {
             throw new NoSuchElementException("Empty Tree");
         }
@@ -207,11 +207,11 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         return removed;
     }
 
-    public int depth(Position<E> v) throws IllegalArgumentException {
+    protected int depth(Position<E> v) throws IllegalArgumentException {
         return depthNode(checkPosition(v));
     }
 
-    private int depthNode(Node<E> v) {
+    protected int depthNode(Node<E> v) {
         if (v == root) {
             return 0;
         } else {
@@ -222,36 +222,36 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
     /**
      * Returns the total height of the tree.
      */
-    public int height() {
+    protected int height() {
         if (isEmpty()) {
             return 0;
         }
         return heightNode(root);
     }
 
-    public int height(Position<E> v) throws IllegalArgumentException {
+    protected int height(Position<E> v) throws IllegalArgumentException {
         return heightNode(checkPosition(v));
     }
 
-    private int heightNode(Node<E> v) {
+    protected int heightNode(Node<E> v) {
         int h = 0;
         if (v.left != null) h = Math.max(h, 1 + heightNode(v.left));
         if (v.right != null) h = Math.max(h, 1 + heightNode(v.right));
         return h;
     }
 
-    public void preOrder(Position<E> v, Consumer<Position<E>> visitor) {
+    protected void preOrder(Position<E> v, Consumer<Position<E>> visitor) {
         Node<E> node = checkPosition(v);
         preOrderConsumer(node, visitor);
     }
 
-    private void preOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
+    protected void preOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
         visitor.accept(v);
         if (v.left != null) preOrderConsumer(v.left, visitor);
         if (v.right != null) preOrderConsumer(v.right, visitor);
     }
 
-    public Iterable<Position<E>> preOrderIterable() {
+    protected Iterable<Position<E>> preOrderIterable() {
         List<Position<E>> snapshot = new ArrayList<>();
         if (!isEmpty()) {
             preOrder(root(), snapshot::add);
@@ -259,7 +259,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         return snapshot;
     }
 
-    public void postOrder(Position<E> v, Consumer<Position<E>> visitor) {
+    protected void postOrder(Position<E> v, Consumer<Position<E>> visitor) {
         Node<E> node = checkPosition(v);
         postOrderConsumer(node, visitor);
     }
@@ -270,7 +270,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         visitor.accept(v);
     }
 
-    public Iterable<Position<E>> postOrderIterable() {
+    protected Iterable<Position<E>> postOrderIterable() {
         List<Position<E>> snapshot = new ArrayList<>();
         if (!isEmpty()) {
             postOrder(root(), snapshot::add);
@@ -278,7 +278,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         return snapshot;
     }
 
-    public void inOrder(Position<E> v, Consumer<Position<E>> visitor) {
+    protected void inOrder(Position<E> v, Consumer<Position<E>> visitor) {
         Node<E> node = checkPosition(v);
         inOrderConsumer(node, visitor);
     }
@@ -289,8 +289,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         if (v.right != null) inOrderConsumer(v.right, visitor);
     }
 
-
-    public Iterable<Position<E>> inOrderIterable() {
+    protected Iterable<Position<E>> inOrderIterable() {
         List<Position<E>> snapshot = new ArrayList<>();
         if (!isEmpty()) {
             inOrder(root(), snapshot::add);
@@ -299,7 +298,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
     }
 
 
-    private Node<E> checkPosition(Position<E> v) throws IllegalArgumentException {
+    protected Node<E> checkPosition(Position<E> v) throws IllegalArgumentException {
         if (!(v instanceof Node<E> node)) { // Cast Position -> Node
             throw new IllegalArgumentException("Not a valid position.");
         }
@@ -311,7 +310,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         return node;
     }
 
-    private static class Node<E> implements Position<E> {
+    protected static class Node<E> implements Position<E> {
         private E element;
         private Node<E> parent;
         private Node<E> left;
@@ -331,7 +330,7 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
         }
     }
 
-    private class ElementIterator implements Iterator<E> {
+    protected class ElementIterator implements Iterator<E> {
         // Use the positions() function
         private final Iterator<Position<E>> posIterator = positions().iterator();
 

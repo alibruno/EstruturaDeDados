@@ -2,19 +2,10 @@ package arvore;
 
 import base.Position;
 
-public class BinarySearchTree<E extends Comparable<E>> {
-    private final LinkedBinaryTree<E> tree = new LinkedBinaryTree<>();
-
-    public boolean isEmpty() {
-        return tree.isEmpty();
-    }
-
-    public int size() {
-        return tree.size();
-    }
+public class BinarySearchTree<E extends Comparable<E>> extends LinkedBinaryTree<E>{
 
     public Iterable<Position<E>> inOrder() {
-        return tree.inOrderIterable();
+        return inOrderIterable();
     }
 
     private Position<E> treeSearch(Position<E> p, E key) {
@@ -22,10 +13,10 @@ public class BinarySearchTree<E extends Comparable<E>> {
 
         if (comp == 0) {
             return p; // Found it
-        } else if (comp < 0 && tree.hasLeft(p)) {
-            return treeSearch(tree.left(p), key);
-        } else if (comp > 0 && tree.hasRight(p)) {
-            return treeSearch(tree.right(p), key);
+        } else if (comp < 0 && hasLeft(p)) {
+            return treeSearch(left(p), key);
+        } else if (comp > 0 && hasRight(p)) {
+            return treeSearch(right(p), key);
         }
 
         // Returns where the search stopped (will be the parent of the new node on insertion)
@@ -33,29 +24,29 @@ public class BinarySearchTree<E extends Comparable<E>> {
     }
 
     public void insert(E key) {
-        if (tree.isEmpty()) {
-            tree.addRoot(key);
+        if (isEmpty()) {
+            addRoot(key);
             return;
         }
 
-        Position<E> p = treeSearch(tree.root(), key);
+        Position<E> p = treeSearch(root(), key);
         int comp = key.compareTo(p.element());
 
         if (comp == 0) {
             return;
         } else if (comp < 0) {
-            tree.addLeft(p, key);
+            addLeft(p, key);
         } else {
-            tree.addRight(p, key);
+            addRight(p, key);
         }
     }
 
     public E remove(E element) {
-        if (tree.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
 
-        Position<E> p = treeSearch(tree.root(), element);
+        Position<E> p = treeSearch(root(), element);
 
         // Element does not exist in the tree
         if (element.compareTo(p.element()) != 0) {
@@ -65,28 +56,28 @@ public class BinarySearchTree<E extends Comparable<E>> {
         E removedElement = p.element();
 
         // The node has 2 children -> Successor
-        if (tree.hasLeft(p) && tree.hasRight(p)) {
+        if (hasLeft(p) && hasRight(p)) {
             // Find the successor
-            Position<E> successor = tree.right(p);
-            while (tree.hasLeft(successor)) {
-                successor = tree.left(successor);
+            Position<E> successor = right(p);
+            while (hasLeft(successor)) {
+                successor = left(successor);
             }
 
             // Replace the target node's element with the successor's element
-            tree.replace(p, successor.element());
+            replace(p, successor.element());
 
             // Move the pointer 'p' to point to the physical successor (this node will be removed)
             p = successor;
         }
 
-        tree.remove(p);
+        remove(p);
 
         return removedElement;
     }
 
     public Position<E> search(E key) {
         if (isEmpty()) return null;
-        Position<E> p = treeSearch(tree.root(), key);
+        Position<E> p = treeSearch(root(), key);
         return key.compareTo(p.element()) == 0 ? p : null;
     }
 
@@ -102,15 +93,15 @@ public class BinarySearchTree<E extends Comparable<E>> {
         }
 
         System.out.println("--- Tree structure ---");
-        printTreeRecursive(tree.root(), 0);
+        printTreeRecursive(root(), 0);
         System.out.println("---------------------------");
     }
 
     // Reverse In-Order
     private void printTreeRecursive(Position<E> p, int depth) {
         // Traverse the right subtree first (displayed at the top)
-        if (tree.hasRight(p)) {
-            printTreeRecursive(tree.right(p), depth + 1);
+        if (hasRight(p)) {
+            printTreeRecursive(right(p), depth + 1);
         }
 
         // Print the current node with indentation based on its depth
@@ -118,8 +109,8 @@ public class BinarySearchTree<E extends Comparable<E>> {
         System.out.println(spaces + p.element());
 
         // Traverse the left subtree (displayed at the bottom)
-        if (tree.hasLeft(p)) {
-            printTreeRecursive(tree.left(p), depth + 1);
+        if (hasLeft(p)) {
+            printTreeRecursive(left(p), depth + 1);
         }
     }
 }
