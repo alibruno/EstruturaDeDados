@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-public abstract class LinkedBinaryTree<E> implements BinaryTree<E> {
+public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
     private Node<E> root;
     private int size;
 
-    public LinkedBinaryTree() {
+    public AbstractLinkedBinaryTree() {
         this.root = null;
         this.size = 0;
     }

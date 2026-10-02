@@ -2,7 +2,7 @@ package arvore;
 
 import base.Position;
 
-public class BinarySearchTree<E extends Comparable<E>> extends LinkedBinaryTree<E>{
+public class BinarySearchTree<E extends Comparable<E>> extends AbstractLinkedBinaryTree<E> {
 
     public Iterable<Position<E>> inOrder() {
         return inOrderIterable();
