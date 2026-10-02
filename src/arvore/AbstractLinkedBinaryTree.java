@@ -131,6 +131,12 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         return replaced;
     }
 
+    /*
+    ===== MÉTODOS AUXILIARES =====
+
+    PROTECTED POR PADRÃO
+    */
+
     public Position<E> addRoot(E e) {
         if (!isEmpty()) {
             throw new IllegalStateException("Root already exists");
