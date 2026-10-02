@@ -9,8 +9,8 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
-    private Node<E> root;
-    private int size;
+    protected Node<E> root;
+    protected int size;
 
     public AbstractLinkedBinaryTree() {
         this.root = null;
@@ -264,7 +264,7 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         postOrderConsumer(node, visitor);
     }
 
-    private void postOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
+    protected void postOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
         if (v.left != null) postOrderConsumer(v.left, visitor);
         if (v.right != null) postOrderConsumer(v.right, visitor);
         visitor.accept(v);
@@ -283,7 +283,7 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         inOrderConsumer(node, visitor);
     }
 
-    private void inOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
+    protected void inOrderConsumer(Node<E> v, Consumer<Position<E>> visitor) {
         if (v.left != null) inOrderConsumer(v.left, visitor);
         visitor.accept(v);
         if (v.right != null) inOrderConsumer(v.right, visitor);
@@ -311,10 +311,10 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
     }
 
     protected static class Node<E> implements Position<E> {
-        private E element;
-        private Node<E> parent;
-        private Node<E> left;
-        private Node<E> right;
+        protected E element;
+        protected Node<E> parent;
+        protected Node<E> left;
+        protected Node<E> right;
 
         public Node(E element, Node<E> parent, Node<E> left, Node<E> right) {
             this.element = element;
@@ -332,7 +332,7 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
 
     protected class ElementIterator implements Iterator<E> {
         // Use the positions() function
-        private final Iterator<Position<E>> posIterator = positions().iterator();
+        protected final Iterator<Position<E>> posIterator = positions().iterator();
 
         @Override
         public boolean hasNext() {
