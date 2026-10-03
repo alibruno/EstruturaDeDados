@@ -141,7 +141,7 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         if (!isEmpty()) {
             throw new IllegalStateException("Root already exists");
         }
-        this.root = new Node<>(e, null, null, null);
+        this.root = createNode(e, null);
         this.size = 1;
         return this.root;
     }
@@ -151,7 +151,7 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         if (node.left != null) {
             throw new IllegalArgumentException("This position already has a child on the left.");
         }
-        Node<E> newNode = new Node<>(e, node, null, null);
+        Node<E> newNode = createNode(e, node);
         node.left = newNode;
         this.size++;
         return newNode;
@@ -162,7 +162,7 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         if (node.right != null) {
             throw new IllegalArgumentException("This position already has a child on the right.");
         }
-        Node<E> newNode = new Node<>(e, node, null, null);
+        Node<E> newNode = createNode(e, node);
         node.right = newNode;
         this.size++;
         return newNode;
@@ -322,6 +322,11 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         protected Node<E> left;
         protected Node<E> right;
 
+        public Node(E element, Node<E> parent) {
+            this.element = element;
+            this.parent = parent;
+        }
+
         public Node(E element, Node<E> parent, Node<E> left, Node<E> right) {
             this.element = element;
             this.parent = parent;
@@ -333,6 +338,13 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         public E element() throws IllegalStateException {
             if (parent == this) throw new IllegalStateException("Position invalid.");
             return element;
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "element=" + element +
+                    '}';
         }
     }
 
@@ -349,5 +361,12 @@ public abstract class AbstractLinkedBinaryTree<E> implements BinaryTree<E> {
         public E next() {
             return posIterator.next().element(); // Extract only the value (E) from the Position
         }
+    }
+
+    /*
+    Factoru method to extends Node class
+     */
+    protected Node<E> createNode(E element, Node<E> parent) {
+        return new Node<>(element, parent);
     }
 }
